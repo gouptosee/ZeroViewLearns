@@ -4,7 +4,6 @@
 
     <declare-styleable name="My_Nest_Parent">
         <attr name="myBehavior" format="string|reference"/>
-        <attr name="pined" format="boolean"/>
     </declare-styleable>
 
 </resources>

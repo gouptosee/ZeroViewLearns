@@ -3,6 +3,7 @@ package com.view.zero.learn.views.nestscroll
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import androidx.core.view.NestedScrollingParent2
@@ -29,22 +30,41 @@ class MNestParent @JvmOverloads constructor(
 
     data class DependViewInfo(var selfview: View, var dependview: View)
 
-
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         prepareChildren()
         ensurePreListener()
     }
 
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-    }
 
+        for (i in 0 until childCount) {
+            val childView = getChildAt(i)
+            if (childView is MAppLayoutInterface) appLayout = childView
+
+            if (childView !is MAppLayout && appLayout != null) {
+                val childHeightSpec = ViewGroup.getChildMeasureSpec(
+                    heightMeasureSpec,
+                    appLayout!!.getPinedHeight(),
+                    childView.layoutParams.height
+                )
+                val childWidthSpec = ViewGroup.getChildMeasureSpec(widthMeasureSpec,0,childView.layoutParams.width)
+
+                childView.measure(childWidthSpec, childHeightSpec)
+            }
+        }
+
+        if (appLayout != null) {
+            totalHeight = appLayout!!.getScrollRange() + measuredHeight
+        } else {
+            totalHeight = measuredHeight
+        }
+
+    }
 
     override fun onNestedScrollAccepted(child: View, target: View, axes: Int, type: Int) {
     }
-
 
     //这个方法只是为了在setNestedScrollingParentForType把当前view的父view设置
     // 后续可以通过getNestedScrollingParentForType获取到viewparent
@@ -70,7 +90,7 @@ class MNestParent @JvmOverloads constructor(
         var afterScrollY = curScrollY + dy
 
         if (curScrollY == 0 || curScrollY == appLayout!!.getScrollRange()) {
-            if(dy <0) {
+            if (dy < 0) {
                 for (i in 0 until childCount) {
                     val paraView = getChildAt(i)
                     var paramas = paraView.layoutParams as MLayoutParams
@@ -106,10 +126,6 @@ class MNestParent @JvmOverloads constructor(
 
             }
         }
-
-        LogUtils.logE("remain consume ->>>>  ${consumed[1]}")
-
-
     }
 
     override fun onNestedScroll(
@@ -121,7 +137,6 @@ class MNestParent @JvmOverloads constructor(
         type: Int
     ) {
     }
-
 
     override fun onStopNestedScroll(target: View, type: Int) {
     }
@@ -139,7 +154,6 @@ class MNestParent @JvmOverloads constructor(
 
 
     inner class MLayoutParams : FrameLayout.LayoutParams {
-
         constructor(width: Int, height: Int) : super(width, height)
         constructor(c: Context, attrs: AttributeSet?) : super(c, attrs)
 
@@ -152,7 +166,6 @@ class MNestParent @JvmOverloads constructor(
         dependRefList.clear()
         for (i in 0 until childCount) {
             val childView = getChildAt(i)
-            if (childView is MAppLayoutInterface) appLayout = childView
             val params = childView.layoutParams as MLayoutParams
             if (params.behavior == null) continue
             for (j in 0 until childCount) {
@@ -165,11 +178,6 @@ class MNestParent @JvmOverloads constructor(
                 }
             }
         }
-        if (appLayout != null) {
-            totalHeight = appLayout!!.getContentHeight() + measuredHeight
-        } else {
-            totalHeight = measuredHeight
-        }
     }
 
 
@@ -178,12 +186,10 @@ class MNestParent @JvmOverloads constructor(
         attrs?.apply {
             val types = context.obtainStyledAttributes(attrs, R.styleable.My_Nest_Parent)
             val behavior = types.getString(R.styleable.My_Nest_Parent_myBehavior)
-            LogUtils.logE("behavior ->>>>  $behavior")
             parentParams.behavior = behavior?.run {
                 parseBehavior(this)
 
             }
-            LogUtils.logE("behavior after->>>>  ${parentParams.behavior}")
 
         }
 

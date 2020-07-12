@@ -5,9 +5,8 @@ import android.widget.TextView
 
 class MBehaviorImp2() : IBehavior<TextView> {
 
-
     override fun dependsOn(parent: View, selfView: TextView, denpendView: View): Boolean {
-        if (denpendView is MAppTopChild) {
+        if (denpendView is MAppLayout) {
             selfView.layout(
                 0,
                 denpendView.measuredHeight,

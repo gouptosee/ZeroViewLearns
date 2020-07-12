@@ -16,7 +16,7 @@ import java.util.jar.Attributes
 import kotlin.math.sign
 
 //默认最后一个会被固定 随便写写
-class MAppTopChild @JvmOverloads constructor(
+class MAppLayout @JvmOverloads constructor(
     context: Context,
     attributes: AttributeSet? = null,
     intStyle: Int = 0
@@ -24,8 +24,6 @@ class MAppTopChild @JvmOverloads constructor(
 
     private lateinit var lastChildPined: View
     private var pinedHeight = 0
-
-
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -49,7 +47,6 @@ class MAppTopChild @JvmOverloads constructor(
         return measuredHeight - pinedHeight
     }
 
-
     private val mChildHelper: NestedScrollingChildHelper = NestedScrollingChildHelper(this)
 
     init {
@@ -65,9 +62,6 @@ class MAppTopChild @JvmOverloads constructor(
 
     private var lastTouchedY = 0
 
-
-
-
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         val actionMask = event.actionMasked
         when (actionMask) {
@@ -79,8 +73,6 @@ class MAppTopChild @JvmOverloads constructor(
 
                 mChildHelper.stopNestedScroll(ViewCompat.TYPE_TOUCH)
                 mChildHelper.stopNestedScroll(ViewCompat.TYPE_NON_TOUCH)
-
-                //其实就是设置setNestedScrollingParentForType，如果父亲有处理的意愿就设置，否则父亲就不处理
                 mChildHelper.startNestedScroll(
                     ViewCompat.SCROLL_AXIS_VERTICAL,
                     ViewCompat.TYPE_TOUCH
@@ -92,32 +84,23 @@ class MAppTopChild @JvmOverloads constructor(
 
                 val curEventY = event.rawY.toInt()
                 var delY = (lastTouchedY - curEventY).toInt()
-
-                LogUtils.logE("dispatchNestPreScroll ->>>>> $curEventY  $lastTouchedY   $delY")
                 if (mChildHelper.dispatchNestedPreScroll(0, delY, consumed, null)) {
                     delY -= consumed[1]
                 }
-
-
-
                 lastTouchedY = curEventY
             }
             MotionEvent.ACTION_UP -> {
                 velocityTracker.computeCurrentVelocity(1000)
                 var velocityY = velocityTracker.yVelocity
-                LogUtils.logE("velocity ->>>> $velocityY")
                 if (Math.abs(velocityY) > minVelocityY) {
                     if (Math.abs(velocityY) > maxVelocityY) {
                         velocityY = velocityY.sign * maxVelocityY
                     }
-
-
                     if (!mChildHelper.dispatchNestedPreFling(0f, -velocityY)) {
                         invalidate()
                     }
 
                 }
-
                 mChildHelper.stopNestedScroll(ViewCompat.TYPE_TOUCH)
 
             }
@@ -125,6 +108,4 @@ class MAppTopChild @JvmOverloads constructor(
 
         return super.dispatchTouchEvent(event)
     }
-
-
 }

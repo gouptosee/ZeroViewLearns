@@ -11,7 +11,7 @@
         >
 
 
-        <com.view.zero.learn.views.nestscroll.MAppTopChild
+        <com.view.zero.learn.views.nestscroll.MAppLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
             android:layout_height="wrap_content">
@@ -57,7 +57,7 @@
 
             </LinearLayout>
 
-        </com.view.zero.learn.views.nestscroll.MAppTopChild>
+        </com.view.zero.learn.views.nestscroll.MAppLayout>
 
 
 

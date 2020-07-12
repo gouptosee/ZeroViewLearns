@@ -4,9 +4,8 @@ import android.view.View
 
 class MBehaviorImp() : IBehavior<MNestChild> {
 
-
     override fun dependsOn(parent: View, selfView: MNestChild, denpendView: View): Boolean {
-        if (denpendView is MAppTopChild) {
+        if (denpendView is MAppLayout) {
             selfView.layout(
                 0,
                 denpendView.measuredHeight,

@@ -69,10 +69,8 @@ class MNestChild @JvmOverloads constructor(
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val actionMask = event.actionMasked
-
         when (actionMask) {
             MotionEvent.ACTION_DOWN -> {
-
                 if (!mScroller.isFinished) {
                     mScroller.abortAnimation()
                     mScroller.forceFinished(true)
@@ -80,7 +78,6 @@ class MNestChild @JvmOverloads constructor(
 
                 mChildHelper.stopNestedScroll(ViewCompat.TYPE_TOUCH)
                 mChildHelper.stopNestedScroll(ViewCompat.TYPE_NON_TOUCH)
-
 
                 //其实就是设置setNestedScrollingParentForType，如果父亲有处理的意愿就设置，否则父亲就不处理
                 mChildHelper.startNestedScroll(
@@ -115,9 +112,7 @@ class MNestChild @JvmOverloads constructor(
                         ViewCompat.TYPE_TOUCH
                     )
                 }
-
                 consumed[1] = 0
-
                 lastTouchedY = curEventY
             }
             MotionEvent.ACTION_UP -> {
@@ -127,17 +122,14 @@ class MNestChild @JvmOverloads constructor(
                     if (Math.abs(velocityY) > maxVelocityY) {
                         velocityY = velocityY.sign * maxVelocityY
                     }
-
-                    if (!mChildHelper.dispatchNestedPreFling(0f, velocityY)) {
-                        fling(-velocityY.toInt())
+                    if (!mChildHelper.dispatchNestedPreFling(0f, -velocityY)) {
+//                        fling(-velocityY.toInt())
                     }
                 }
 
                 mChildHelper.stopNestedScroll(ViewCompat.TYPE_TOUCH)
             }
         }
-
-
         return true
     }
 
@@ -157,7 +149,6 @@ class MNestChild @JvmOverloads constructor(
 
     fun fling(velocityY: Int) {
         if (childCount > 0) {
-            LogUtils.logE("child fliping ->>>> $velocityY")
             mChildHelper.startNestedScroll(
                 ViewCompat.SCROLL_AXIS_VERTICAL,
                 ViewCompat.TYPE_NON_TOUCH
