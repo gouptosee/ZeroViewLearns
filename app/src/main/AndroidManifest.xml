@@ -19,6 +19,7 @@
         <activity android:name=".uis.NestTestActivity"/>
         <activity android:name=".uis.PullRefreshActivity"/>
         <activity android:name=".uis.NestTestRecyclerviewActivity"/>
+        <activity android:name=".uis.NestTestViewPagerActivity"/>
     </application>
 
 </manifest>

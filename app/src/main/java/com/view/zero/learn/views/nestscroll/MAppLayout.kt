@@ -2,6 +2,7 @@ package com.view.zero.learn.views.nestscroll
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
@@ -11,6 +12,7 @@ import android.widget.Scroller
 import androidx.core.view.NestedScrollingChild
 import androidx.core.view.NestedScrollingChildHelper
 import androidx.core.view.ViewCompat
+import com.view.zero.learn.LogTag
 import com.view.zero.learn.utils.LogUtils
 import java.util.jar.Attributes
 import kotlin.math.sign
