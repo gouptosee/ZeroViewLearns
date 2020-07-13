@@ -41,4 +41,7 @@ class MBehaviorImp3() : IBehavior<TextView> {
     override fun tryScrollTo(target: TextView, delx: Int, delY: Int) {
     }
 
+    override fun onStartScroll() {
+    }
+
 }

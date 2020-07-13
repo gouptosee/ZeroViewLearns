@@ -14,4 +14,6 @@ interface IBehavior<T : View> {
 
     fun tryScrollTo(target: T, delx: Int, delY: Int)
 
+    fun onStartScroll()
+
 }

@@ -52,4 +52,7 @@ class MBehaviorImp2() : IBehavior<TextView> {
 
     }
 
+    override fun onStartScroll() {
+    }
+
 }

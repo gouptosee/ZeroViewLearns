@@ -2,12 +2,14 @@ package com.view.zero.learn.views.nestscroll
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import androidx.core.view.NestedScrollingParent2
 import androidx.core.view.ViewCompat
+import com.view.zero.learn.LogTag
 import com.view.zero.learn.R
 import com.view.zero.learn.utils.LogUtils
 import java.lang.Exception
@@ -49,7 +51,8 @@ class MNestParent @JvmOverloads constructor(
                     appLayout!!.getPinedHeight(),
                     childView.layoutParams.height
                 )
-                val childWidthSpec = ViewGroup.getChildMeasureSpec(widthMeasureSpec,0,childView.layoutParams.width)
+                val childWidthSpec =
+                    ViewGroup.getChildMeasureSpec(widthMeasureSpec, 0, childView.layoutParams.width)
 
                 childView.measure(childWidthSpec, childHeightSpec)
             }
@@ -75,7 +78,20 @@ class MNestParent @JvmOverloads constructor(
         nestedScrollAxes: Int,
         type: Int
     ): Boolean {
-        return nestedScrollAxes and ViewCompat.SCROLL_AXIS_VERTICAL != 0
+        var canScroll = nestedScrollAxes and ViewCompat.SCROLL_AXIS_VERTICAL != 0
+
+        if (canScroll) {
+            for (i in 0 until childCount) {
+                val target = getChildAt(i)
+                val params = target.layoutParams as MLayoutParams
+                params.behavior?.apply {
+                    params!!.behavior!!.onStartScroll()
+
+                }
+            }
+        }
+
+        return canScroll
     }
 
 
@@ -233,6 +249,7 @@ class MNestParent @JvmOverloads constructor(
             val params = target.layoutParams as MLayoutParams
             params.behavior?.apply {
                 params!!.behavior!!.fliping(target, velocityY)
+
             }
         }
         return false
