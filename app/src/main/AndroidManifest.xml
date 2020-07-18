@@ -20,6 +20,9 @@
         <activity android:name=".uis.PullRefreshActivity"/>
         <activity android:name=".uis.NestTestRecyclerviewActivity"/>
         <activity android:name=".uis.NestTestViewPagerActivity"/>
+        <activity android:name=".uis.DrawFishActivity"
+            android:theme="@style/AppTheme.MFullScreen"
+            />
     </application>
 
 </manifest>
