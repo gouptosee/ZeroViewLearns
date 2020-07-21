@@ -1,23 +1,22 @@
 package com.view.zero.learn.uis
 
 import android.os.Bundle
-import android.util.Log
-import android.view.MotionEvent
-import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
-import com.view.zero.learn.LogTag
 import com.view.zero.learn.R
-import com.view.zero.learn.views.draw.fish.DrawUtils
 import com.view.zero.learn.views.draw.fish.FishDrawable
 import com.view.zero.learn.views.draw.fish.FishDrawable2
+import com.view.zero.learn.views.draw.fish.FishLayout
+import com.view.zero.learn.views.draw.fish.FishLayout2
 import kotlinx.android.synthetic.main.activity_draw_fish.*
+import kotlinx.android.synthetic.main.activity_draw_fish2.*
 
-class DrawFishActivity : AppCompatActivity() {
-
+class DrawFishActivity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_draw_fish)
-        fishlayout.initFish(FishDrawable())
+        setContentView(R.layout.activity_draw_fish2)
+        findViewById<FishLayout2>(R.id.fishlayout).initFish(FishDrawable2())
+
     }
+
 
 }

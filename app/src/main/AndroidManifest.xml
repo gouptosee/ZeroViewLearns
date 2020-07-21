@@ -21,8 +21,8 @@
         <activity android:name=".uis.NestTestRecyclerviewActivity"/>
         <activity android:name=".uis.NestTestViewPagerActivity"/>
         <activity android:name=".uis.DrawFishActivity"
-            android:theme="@style/AppTheme.MFullScreen"
             />
+        <activity android:name=".uis.DrawFishActivity2"/>
     </application>
 
 </manifest>

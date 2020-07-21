@@ -7,14 +7,18 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
+import android.view.View
 import android.view.animation.Animation
 import androidx.core.graphics.plus
 import com.view.zero.learn.LogTag
+import kotlin.math.acos
+import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.sin
 
-class FishDrawable : Drawable {
+class FishDrawable : Drawable ,FishInterface{
 
+    private var fishMainAngle = 0f
     private var Fish_Base_Radius = 100f; //基础数值，所有尺寸都是在这个基础上进行计算的
     private val DrawableSize = 8.38 * Fish_Base_Radius
     private val Fish_Total_Size = 6.79 * Fish_Base_Radius
@@ -41,11 +45,14 @@ class FishDrawable : Drawable {
     private val Fish_Tail_While_Lenth = 4 //与微商白条宽度
     private val Fish_White_Line_Color = Color.parseColor("#ffffff")
 
-    private val Fish_Tail_Trangle_Angle_1 = 55f //鱼尾大尾巴三角夹角
-    private val Fish_Tail_Trangle_Angle_2 = 65f //鱼尾小尾巴三角夹角
+    private val Fish_Tail_Trangle_Angle_1 = 55f //鱼尾大尾巴最大三角夹角
+    private val Fish_Tail_Trangle_Angle_2 = 65f //鱼尾小尾巴最大三角夹角
 
-    private val Fish_Tail_Trangle_Length_1 = (Fish_Base_Radius * 1.2).toFloat() //大三角鱼尾的斜边长度
-    private val Fish_Tail_Trangle_Length_2 = (Fish_Base_Radius * 0.9).toFloat() //小三角鱼尾的斜边长度
+    private var current_Tail_Angle_1 = Fish_Tail_Trangle_Angle_1 // [value ,90]
+    private var current_Tail_Angle_2 = Fish_Tail_Trangle_Angle_2
+
+    private val Fish_Tail_Trangle_Length_1 = (Fish_Base_Radius * 1.3).toFloat() //大三角鱼尾的斜边长度
+    private val Fish_Tail_Trangle_Length_2 = (Fish_Base_Radius * 0.95).toFloat() //小三角鱼尾的斜边长度
 
 
     private val Fish_Tail_2_StartY = (5.32 * Fish_Base_Radius).toFloat() //鱼尾第二截相对y方向位置
@@ -54,7 +61,8 @@ class FishDrawable : Drawable {
     private val Fish_Body_Control_Y_Scale = 1f //鱼身控制点x相对于起始位置的偏移比例
 
     private var currentTailDegree = 0f;//当前鱼尾摆动角度
-    private var TailMaxDegree = 25f;//鱼尾摆动的最大角度 [-TailMaxDegree,TailMaxDegree]
+    private var currentTailDegree2 = 0f;//当前鱼尾摆动角度
+    private var TailMaxDegree = 0.60f;//鱼尾摆动的最大角度 [-TailMaxDegree,TailMaxDegree]
 
     private var tailDruation = 500 //鱼尾摆动一次耗时
 
@@ -85,19 +93,29 @@ class FishDrawable : Drawable {
         innerInit()
     }
 
-    private fun initAnims(){
-        val anim = ValueAnimator.ofFloat(-TailMaxDegree,TailMaxDegree,-TailMaxDegree)
-        anim.addUpdateListener(object :ValueAnimator.AnimatorUpdateListener{
+    private var anim: ValueAnimator? = null
+
+    private fun initAnims() {
+        anim = ValueAnimator.ofFloat(-TailMaxDegree, TailMaxDegree)
+        anim!!.addUpdateListener(object : ValueAnimator.AnimatorUpdateListener {
             override fun onAnimationUpdate(animation: ValueAnimator?) {
-                currentTailDegree = animation!!.animatedValue as Float
+                val value = animation!!.animatedValue as Float
+                currentTailDegree = (asin(value) * 180 / Math.PI).toFloat()
+                currentTailDegree2 = (asin(value) * 180 / Math.PI).toFloat()
+
+                current_Tail_Angle_1 =
+                    Math.abs(value) * (90 - Fish_Tail_Trangle_Angle_1) + Fish_Tail_Trangle_Angle_1
+                current_Tail_Angle_2 =
+                    Math.abs(value) * (90 - Fish_Tail_Trangle_Angle_2) + Fish_Tail_Trangle_Angle_2
+
                 invalidateSelf()
             }
 
         })
-        anim.repeatCount = Animation.INFINITE
-        anim.repeatMode = ValueAnimator.RESTART
-        anim.duration = tailDruation.toLong()
-        anim.start()
+        anim!!.repeatCount = Animation.INFINITE
+        anim!!.repeatMode = ValueAnimator.REVERSE
+        anim!!.duration = tailDruation.toLong()
+        anim!!.start()
     }
 
 
@@ -112,11 +130,17 @@ class FishDrawable : Drawable {
 
 
     override fun draw(canvas: Canvas) {
+        canvas.rotate(fishMainAngle)
         canvas.translate(0f, Canvas_Init_TranslateY.toFloat())
+
+        canvas.save()
+        canvas.rotate(currentTailDegree / 6, BaseCenterX, Fish_Tail_StartY)
         drawFishHead(canvas)
         drawFishFins(canvas)
-        drawTails(canvas)
         drawBody(canvas)
+        canvas.restore()
+
+        drawTails(canvas)
     }
 
     override fun setAlpha(alpha: Int) {
@@ -190,7 +214,10 @@ class FishDrawable : Drawable {
         canvas.save()
         canvas.rotate(currentTailDegree.toFloat(), BaseCenterX, Fish_Tail_StartY)
         drawTail_1(canvas)
+
+        canvas.rotate(currentTailDegree2.toFloat(), BaseCenterX, Fish_Tail_2_StartY)
         drawTail_2(canvas)
+
         drawTail_3(canvas)
         canvas.restore()
     }
@@ -255,26 +282,26 @@ class FishDrawable : Drawable {
         val startPointF = PointF(BaseCenterX, Fish_Tail_2_StartY)
         val bigTrangleLeftPointF = calcuteTargetPoint(
             startPointF,
-            Fish_Tail_Trangle_Angle_1,
+            current_Tail_Angle_1,
             Fish_Tail_Trangle_Length_1,
             true
         )
         val bigTrangleRightPointF = calcuteTargetPoint(
             startPointF,
-            Fish_Tail_Trangle_Angle_1,
+            current_Tail_Angle_1,
             Fish_Tail_Trangle_Length_1,
             false
         )
 
         val smallTrangleLeftPointF = calcuteTargetPoint(
             startPointF,
-            Fish_Tail_Trangle_Angle_2,
+            current_Tail_Angle_2,
             Fish_Tail_Trangle_Length_2,
             true
         )
         val smallTrangleRightPointF = calcuteTargetPoint(
             startPointF,
-            Fish_Tail_Trangle_Angle_2,
+            current_Tail_Angle_2,
             Fish_Tail_Trangle_Length_2,
             false
         )
@@ -381,6 +408,29 @@ class FishDrawable : Drawable {
         val yOffset = sin(targetAngle) * distance
 
         return PointF((startPoint.x + xOffset).toFloat(), (startPoint.y + yOffset).toFloat())
+    }
+
+    private var acc = false
+
+    override fun accelSwim(acc: Boolean) {
+        this.acc = acc
+        if(acc){
+            anim!!.duration = (tailDruation/2).toLong()
+        }else{
+            anim!!.duration = tailDruation.toLong()
+        }
+    }
+
+    override fun getFishHeadPointF(): PointF {
+        return PointF(0f,0f)
+    }
+
+    override fun getFishAngle(): Float {
+        return fishMainAngle
+    }
+
+    override fun getFishBaseLength(): Float {
+        return Fish_Base_Radius
     }
 
 

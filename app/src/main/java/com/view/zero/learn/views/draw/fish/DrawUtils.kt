@@ -42,6 +42,7 @@ class DrawUtils {
             swimAnim.setDuration(duration)
             swimAnim.interpolator = DecelerateInterpolator()
             swimAnim.start()
+
         }
 
         //有问题
