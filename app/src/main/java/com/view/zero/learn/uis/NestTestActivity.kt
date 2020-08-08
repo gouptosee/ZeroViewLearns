@@ -4,10 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -29,6 +26,8 @@ class NestTestActivity : AppCompatActivity() {
 //        mNestChild.post(){
 //            Log.e(LogTag,"post height ->>> ${mNestChild.measuredHeight}  ${mNestChild.measuredWidth}")
 //        }
+        Log.e(LogTag,"Nest ->>> ${LayoutInflater.from(this)}")
+
     }
 
     private fun addTextViews() {

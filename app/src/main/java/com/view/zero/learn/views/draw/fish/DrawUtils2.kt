@@ -2,7 +2,6 @@ package com.view.zero.learn.views.draw.fish
 
 import android.animation.ObjectAnimator
 import android.graphics.Path
-import android.graphics.PathMeasure
 import android.graphics.PointF
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -42,9 +41,22 @@ class DrawUtils2 {
 
 
             val angleV = (a*a + b*b -c*c)/(2*a*b).toFloat()
-            val angle =Math.toDegrees( Math.acos(angleV)).toFloat() //算出余弦角度
+            var angle =Math.toDegrees( Math.acos(angleV)).toFloat() //算出余弦角度
 
-            //todo 角度计算不正确
+            //todo 角度计算不正确  需要额外计算fishAngle
+            //上面的算法算出的角度实际上是鱼重心 鱼头坐标系所需要偏向角，和数学坐标系的夹角不能画等号
+            //可以通过 鱼重心 鱼头 连线，然后和点（鱼重心.x+1 ,鱼重心.y) 组成，用上面同样的方法计算出鱼相对于数学坐标系的夹角
+            //上面两个夹角加起来，才是所需求的点在数学坐标系的真正的偏角
+
+            // AB连线与X的夹角的tan值 - OB与x轴的夹角的tan值
+            val direction: Float = (control_1.y - endPointF.y) / (control_1.x - endPointF.x) - (startPointF.y - endPointF.y) / (startPointF.x - endPointF.x)
+
+                if (direction > 0) {
+                    angle = -angle
+                } else {
+                    angle
+                }
+
 
             val control2 = calFishTargetPointF(startPointF,fishAngle+angle/2,firstLength*2)
 
@@ -53,6 +65,10 @@ class DrawUtils2 {
             return array
 
         }
+
+
+
+
 
         fun solveSwiming(
             targetView: View,

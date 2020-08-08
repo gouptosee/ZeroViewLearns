@@ -23,6 +23,7 @@
         <activity android:name=".uis.DrawFishActivity"
             />
         <activity android:name=".uis.DrawFishActivity2"/>
+        <activity android:name=".views.draw.pinrecycler.RecyclePinTestActivity"/>
     </application>
 
 </manifest>
